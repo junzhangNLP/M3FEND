@@ -29,12 +29,6 @@ class FNDDataset(Dataset):
                         ORCs.append(str(self.ORC_data[self.ORC_data["filename"] == i]["content"])) 
                         filepath = os.path.join(image_path, i)
                         
-                        try:
-                            image = Image.open(filepath).convert('RGB')
-                        except Exception as e:
-                            print(f"图片加载失败: {e}")
-                            # 返回占位图
-                            image = Image.new('RGB', (224, 224), (0, 0, 0))
                         
                 ORC_list = [
                     s for s in ORCs 
@@ -61,15 +55,7 @@ class FNDDataset(Dataset):
                         images.append(str(self.caption_data[self.caption_data["filename"] == i]["content"]))
                         ORCs.append(str(self.ORC_data[self.ORC_data["filename"] == i]["content"])) 
                         filepath = os.path.join(image_path, i)
-                        try:
-                            image = Image.open(filepath).convert('RGB')
-                        except Exception as e:
-                            print(f"图片加载失败: {e}")
-                            # 返回占位图
-                            image = Image.new('RGB', (224, 224), (0, 0, 0))
-                    else:
-                        image = Image.new('RGB', (224, 224), (0, 0, 0))
-                        
+
                 ORC_list = [
                     s for s in ORCs 
                     if not s.replace('\n', '').replace('\r', '').isdigit() and len(s) >= 5
@@ -95,14 +81,7 @@ class FNDDataset(Dataset):
                         images.append(str(self.caption_data[self.caption_data["filename"] == i]["content"]))
                         ORCs.append(str(self.ORC_data[self.ORC_data["filename"] == i]["content"])) 
                         filepath = os.path.join(image_path, i)
-                        try:
-                            image = Image.open(filepath).convert('RGB')
-                        except Exception as e:
-                            print(f"图片加载失败: {e}")
-                            # 返回占位图
-                            image = Image.new('RGB', (224, 224), (0, 0, 0))
-                    else:
-                        image = Image.new('RGB', (224, 224), (0, 0, 0))
+
                         
                 ORC_list = [
                     s for s in ORCs 
@@ -131,13 +110,10 @@ class FNDDataset(Dataset):
 
             for id, row in self.text_data.iterrows():
     
-                # 在 caption_data 中查找
                 caption_match = self.caption_data[self.caption_data["clean_id"].astype(int) == row["id"]]
 
-                # 在 ORC_data 中查找
                 orc_match = self.ORC_data[self.ORC_data["clean_id"].astype(int) == row["id"]]
 
-                # 在 video_data 中查找
                 video_match = self.video_data[self.video_data["clean_id"].astype(int) == row["id"]]
                 if caption_match.empty and not video_match.empty:
                     caption = video_match["content"].iloc[0]
@@ -167,14 +143,6 @@ class FNDDataset(Dataset):
 
                 if found_path:
                     if found_path.lower().endswith(('.jpg', '.jpeg', '.png')):
-                        try:
-                            img = Image.open(found_path)
-                            if img.mode != 'RGB':
-                                img = img.convert('RGB')
-                            img = img.resize((224, 224))
-                        except:
-                            # 创建黑色占位图（也可以改为白色或其他颜色）
-                            img = Image.new('RGB', (224, 224), color=0)
                     elif found_path.lower().endswith('.mp4'):
                         cap = cv2.VideoCapture(found_path)
                         ret, frame = cap.read()  # 读取第一帧
@@ -207,5 +175,6 @@ class FNDDataset(Dataset):
             'ORC': item['ORC'],  
             'label': int(item['label'])
         }
+
 
 
